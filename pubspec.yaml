@@ -40,6 +40,8 @@ dependencies:
   # Package to get device running the app
   device_info: ^2.0.0
   flutter_svg: ^1.1.6
+  url_launcher: ^6.1.11
+  universal_html: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +71,7 @@ flutter:
      - assets/logo-linkedin.svg
      - assets/logo-github.svg
      - assets/briefcase.svg
+     - assets/jota-cv.pdf
 
   fonts:
     - family: Montserrat

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 void main() {
   runApp(const MyApp());
@@ -129,9 +131,15 @@ class MyHomePage extends StatelessWidget {
 
   Widget socialButtons() {
     return Row(children: [
-      Center(child: SvgPicture.asset('assets/logo-linkedin.svg', width: 44, height: 44, color: primaryColor)),
+      SocialButton(
+        icon: SvgPicture.asset('assets/logo-linkedin.svg', width: 40, height: 40, color: primaryColor),
+        url: Uri.parse("https://www.linkedin.com/in/jo%C3%A3o-pedro-de-souza-coutinho-b9440082/")
+      ),
       const SizedBox(width: 8),
-      Center(child: SvgPicture.asset('assets/logo-github.svg', width: 44, height: 44, color: primaryColor)),
+      SocialButton(
+        icon: SvgPicture.asset('assets/logo-github.svg', width: 40, height: 40, color: primaryColor),
+        url: Uri.parse("https://github.com/jotacoutinho")
+      ),
     ]);
   }
 
@@ -139,9 +147,7 @@ class MyHomePage extends StatelessWidget {
     return Row(children: [
       const Text("Download", style: TextStyle(color: Colors.white60, fontSize: 14, fontWeight: FontWeight.normal)),
       TextButton(
-        onPressed: () {
-          // TODO: download PDF
-        },
+        onPressed: () { openPdfInNewTab(); },
         child: const Text('my resume', style: 
           TextStyle(
             color: Colors.white, 
@@ -153,6 +159,13 @@ class MyHomePage extends StatelessWidget {
       ),
       const Text("(PDF 1.08MB)", style: TextStyle(color: Colors.white60, fontSize: 14, fontWeight: FontWeight.normal)),
     ]);
+  }
+
+  void openPdfInNewTab() {
+    const String assetPath = 'assets/jota-cv.pdf';
+    final assetUrl = Uri.base.resolve(assetPath).toString();
+
+    launchUrlString(assetUrl);
   }
 
   // Image View
@@ -170,12 +183,43 @@ class MyHomePage extends StatelessWidget {
   );
 }
 
+class SocialButton extends StatelessWidget {
+  final SvgPicture icon;
+  final Uri url;
+
+  const SocialButton({
+      super.key, 
+      required this.icon,
+      required this.url
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _launchURL(url), 
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click, 
+        child: icon)
+    );
+  }
+}
+
+// URL Launcher
+Future<void> _launchURL(Uri url) async {
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+}
+
 class CircularIcon extends StatelessWidget {
   final SvgPicture icon;
   final double iconSize;
   final Color backgroundColor;
 
-  CircularIcon({
+  const CircularIcon({
+    super.key, 
     required this.icon,
     required this.iconSize,
     required this.backgroundColor,
