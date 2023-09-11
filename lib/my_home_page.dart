@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:landing/Helpers/device_manager_helper.dart';
 import 'Theme/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'Helpers/url_helper.dart';
@@ -17,16 +18,31 @@ class MyHomePage extends StatelessWidget {
     return Container(
       color: secondaryColor,
       height: double.infinity,
-      child: Row(
-        children: [
-          infoView(),
-          imageView()
-        ]
-      )
+      child: getRootWidgetAccordingToDevice()
     );
   }
 
   // Widgets
+  Widget? getRootWidgetAccordingToDevice() {
+    return FutureBuilder<bool>(
+      future: DeviceManagerHelper.isRunningOnMobile(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          final isRunningOnMobile = snapshot.data ?? true;
+          if (isRunningOnMobile) {
+            return Column(children: [infoView(), imageView()]);
+          } else {
+            return Row(children: [infoView(), imageView()]);
+          }
+        }
+      }
+    );
+  }
+
   Widget infoView() { 
     return Expanded(
       flex: 1,

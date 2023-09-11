@@ -2,7 +2,7 @@ import 'package:device_info/device_info.dart';
 import 'package:flutter/foundation.dart';
 
 class DeviceManagerHelper {
-  Future<bool> isRunningOnMobile() async {
+  static Future<bool> isRunningOnMobile() async {
     try {
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
@@ -16,7 +16,7 @@ class DeviceManagerHelper {
     } catch (e) {
       debugPrint('Error: $e');
       // Defaults to mobile experience because it's less likely to break the layout
-      return true;
+      return false;
     }
   }
 }
