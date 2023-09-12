@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:landing/Helpers/device_manager_helper.dart';
 import 'Theme/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'Helpers/url_helper.dart';
@@ -10,11 +9,15 @@ class MyHomePage extends StatelessWidget {
   MyHomePage({super.key, required this.title});
 
   static const AssetImage backgroundImage = AssetImage('backgroundImage.png');
-
   final String title;
+  bool isRunningOnMobile = false;
+  static const imageSemanticLabel = "Picture of me with a joyful expression, smiling, looking slightly to the left. I have silver hair, brown eyes, and I'm wearing a black T-shirt that reads `Sorry I'm late`.";
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
+    isRunningOnMobile = screenSize.width < screenSize.height;
+
     return Container(
       color: secondaryColor,
       height: double.infinity,
@@ -23,38 +26,27 @@ class MyHomePage extends StatelessWidget {
   }
 
   // Widgets
-  Widget? getRootWidgetAccordingToDevice() {
-    return FutureBuilder<bool>(
-      future: DeviceManagerHelper.isRunningOnMobile(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          final isRunningOnMobile = snapshot.data ?? true;
-          if (isRunningOnMobile) {
-            return Column(children: [infoView(), imageView()]);
-          } else {
-            return Row(children: [infoView(), imageView()]);
-          }
-        }
-      }
-    );
+  Widget getRootWidgetAccordingToDevice() {
+    if (isRunningOnMobile) {
+      return Column(children: [imageView(), infoView()]);
+    } else {
+      return Row(children: [infoView(), imageView()]);
+    }
   }
 
   Widget infoView() { 
     return Expanded(
       flex: 1,
-      child: bio()
+      child: SingleChildScrollView(scrollDirection: Axis.vertical, child: bio())
     );
   }
 
-  Widget imageView() { 
-    return const Expanded(
-      flex: 1,
-      child: Image(image: backgroundImage, height: double.infinity, fit: BoxFit.fitHeight)
-    );
+  Widget imageView() {
+    if (isRunningOnMobile) {
+      return const Expanded(flex: 1, child: Image(image: backgroundImage, fit: BoxFit.fitWidth, width: double.infinity, semanticLabel: imageSemanticLabel));
+    } else {
+      return const Expanded(flex: 1, child: Image(image: backgroundImage, fit: BoxFit.cover, height: double.infinity, width: double.infinity, semanticLabel: imageSemanticLabel));
+    }
   }
 
   Widget bio() {
@@ -103,26 +95,24 @@ class MyHomePage extends StatelessWidget {
   }
 
   Widget linksContainer() {
-    return Wrap(
-      children: [
-        Column(children: [
-          socialButtons(),
-          downloadResume(),
-        ],),
-      ],
-    );
+    return Column(children: [
+      socialButtons(),
+      downloadResume(),
+    ]);
   } 
 
   Widget socialButtons() {
     return Row(children: [
       SocialButton(
         icon: SvgPicture.asset('assets/logo-linkedin.svg', width: 40, height: 40, color: primaryColor),
-        url: Uri.parse("https://www.linkedin.com/in/jo%C3%A3o-pedro-de-souza-coutinho-b9440082/")
+        url: Uri.parse("https://www.linkedin.com/in/jo%C3%A3o-pedro-de-souza-coutinho-b9440082/"),
+        socialMedia: "Linkedin",
       ),
       const SizedBox(width: 8),
       SocialButton(
         icon: SvgPicture.asset('assets/logo-github.svg', width: 40, height: 40, color: primaryColor),
-        url: Uri.parse("https://github.com/jotacoutinho")
+        url: Uri.parse("https://github.com/jotacoutinho"),
+        socialMedia: "Github",
       ),
     ]);
   }
@@ -141,7 +131,7 @@ class MyHomePage extends StatelessWidget {
             decorationColor: Colors.white,
             decorationThickness: 1.0))
       ),
-      const Text("(PDF 1.08MB)", style: TextStyle(color: Colors.white60, fontSize: 14, fontWeight: FontWeight.normal)),
+      const Text("(PDF)", style: TextStyle(color: Colors.white60, fontSize: 14, fontWeight: FontWeight.normal)),
     ]);
   }
 

@@ -5,11 +5,13 @@ import '../Helpers/url_helper.dart';
 class SocialButton extends StatelessWidget {
   final SvgPicture icon;
   final Uri url;
+  final String socialMedia;
 
   const SocialButton({
       super.key, 
       required this.icon,
-      required this.url
+      required this.url,
+      required this.socialMedia
   });
 
   @override
@@ -18,7 +20,11 @@ class SocialButton extends StatelessWidget {
       onTap: () => UrlHelper.launchURLFromUri(url), 
       child: MouseRegion(
         cursor: SystemMouseCursors.click, 
-        child: icon)
+        child: Semantics(
+          label: "Link to $socialMedia", 
+          child: icon
+        )
+      )
     );
   }
 }
